@@ -1,9 +1,21 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
 import { X, AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react'
 import useStore from '../store/useStore'
 
 const NotificationPanel = () => {
   const { notifications, removeNotification } = useStore()
+
+  // Auto-dismiss notifications after 5 seconds
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const timer = setTimeout(() => {
+        removeNotification(notifications[0].id)
+      }, 5000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [notifications, removeNotification])
 
   const getIcon = (type) => {
     switch (type) {

@@ -3,16 +3,19 @@ import { useState, useEffect } from 'react'
 import ErrorBoundary from './components/ErrorBoundary'
 import ImprovedNavigation from './components/ImprovedNavigation'
 import ConnectionStatus from './components/ConnectionStatus'
+import NotificationPanel from './components/NotificationPanel'
 import DriverPage from './pages/DriverPage'
 import OperatorPage from './pages/OperatorPage'
 import CityPage from './pages/CityPage'
 import FuturePage from './pages/FuturePage'
 import AdvancedAnalyticsPage from './pages/AdvancedAnalyticsPage'
 import useWebSocket from './hooks/useWebSocket'
+import useStore from './store/useStore'
 
 function App() {
   const WS_URL = `ws://localhost:5000/ws`
   const [showConnectionStatus, setShowConnectionStatus] = useState(true)
+  const { addNotification } = useStore()
 
   // WebSocket connection
   const {
@@ -28,12 +31,33 @@ function App() {
       
       // Show notifications for important events
       if (data.type === 'alert') {
-        // Show notification (you can integrate with a toast library)
-        console.log('Alert:', data.message)
+        addNotification({
+          type: 'warning',
+          title: 'System Alert',
+          message: data.message || 'New alert received'
+        })
+      } else if (data.type === 'booking') {
+        addNotification({
+          type: 'success',
+          title: 'Booking Update',
+          message: data.message || 'Booking status updated'
+        })
+      } else if (data.type === 'prediction') {
+        addNotification({
+          type: 'info',
+          title: 'AI Prediction',
+          message: data.message || 'New parking prediction available'
+        })
       }
     },
     onOpen: () => {
       console.log('✅ Global WebSocket connected')
+      // Show welcome notification
+      addNotification({
+        type: 'success',
+        title: 'Connected',
+        message: 'Real-time updates are now active'
+      })
       // Hide connection status after 3 seconds when connected
       setTimeout(() => setShowConnectionStatus(false), 3000)
     },
@@ -88,6 +112,9 @@ function App() {
               onReconnect={reconnect}
             />
           )}
+
+          {/* Notification Panel */}
+          <NotificationPanel />
         </div>
       </Router>
     </ErrorBoundary>

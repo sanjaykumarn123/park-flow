@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, MapPin, Filter } from 'lucide-react'
+import { Search, MapPin, Filter, Sparkles } from 'lucide-react'
 import useFetch from '../hooks/useFetch'
 import useStore from '../store/useStore'
 import ParkingLotCard from '../components/driver/ParkingLotCard'
@@ -7,11 +7,12 @@ import ParkingMap from '../components/driver/ParkingMap'
 import BookingModal from '../components/driver/BookingModal'
 import ActiveBooking from '../components/driver/ActiveBooking'
 import RerouteModal from '../components/driver/RerouteModal'
+import SmartParkingAssistant from '../components/driver/SmartParkingAssistant'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 
 const DriverPage = () => {
-  const [viewMode, setViewMode] = useState('list') // 'list' or 'map'
+  const [viewMode, setViewMode] = useState('smart') // 'smart', 'list' or 'map'
   const [searchQuery, setSearchQuery] = useState('')
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [showRerouteModal, setShowRerouteModal] = useState(false)
@@ -49,6 +50,17 @@ const DriverPage = () => {
 
         {/* View Toggle */}
         <div className="flex items-center space-x-2 bg-dark-card border border-dark-border rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('smart')}
+            className={`px-4 py-2 rounded-md font-medium transition-colors flex items-center gap-2 ${
+              viewMode === 'smart'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white'
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            AI Assistant
+          </button>
           <button
             onClick={() => setViewMode('list')}
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
@@ -99,7 +111,9 @@ const DriverPage = () => {
 
       {!loading && !error && (
         <>
-          {viewMode === 'list' ? (
+          {viewMode === 'smart' ? (
+            <SmartParkingAssistant />
+          ) : viewMode === 'list' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredLots.map((lot) => (
                 <ParkingLotCard

@@ -4,10 +4,12 @@ import {
   Car, Building2, Map, Sparkles, BarChart3, Menu, X, Wifi, WifiOff,
   Bell, Settings, HelpCircle, User, LogOut
 } from 'lucide-react'
+import useStore from '../store/useStore'
 
 const ImprovedNavigation = ({ connectionStatus }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const { addNotification, notifications } = useStore()
   const location = useLocation()
 
   const navItems = [
@@ -29,13 +31,7 @@ const ImprovedNavigation = ({ connectionStatus }) => {
       icon: <Map className="w-5 h-5" />,
       description: 'City-wide analytics'
     },
-    {
-      path: '/advanced-analytics',
-      label: 'Analytics',
-      icon: <BarChart3 className="w-5 h-5" />,
-      description: 'ML & Predictions',
-      badge: 'NEW'
-    },
+    
     {
       path: '/future',
       label: 'Future',
@@ -115,9 +111,20 @@ const ImprovedNavigation = ({ connectionStatus }) => {
             </div>
 
             {/* Notifications */}
-            <button className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
+            <button 
+              onClick={() => {
+                addNotification({
+                  type: 'info',
+                  title: 'Test Notification',
+                  message: 'This is a demo notification. Notifications will appear here!'
+                })
+              }}
+              className="relative p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              {notifications.length > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              )}
             </button>
 
             {/* User Menu */}
